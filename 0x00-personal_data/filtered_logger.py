@@ -4,6 +4,7 @@ Module for handling Personal Data
 """
 
 from logging import LogRecord, StreamHandler
+from typing import List
 import re
 import csv
 import logging
@@ -14,7 +15,7 @@ import mysql.connector
 PII_FIELDS = ("name", "email", "ssn", "password")
 
 
-def filter_datum(fields: list[str], redaction: str,
+def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
     """ Returns a log message obfuscated """
     for f in fields:
@@ -48,8 +49,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
             user=username,
             password=password,
             host=host,
-            database=db_name
-    )
+            database=db_name)
 
 
 class RedactingFormatter(logging.Formatter):
@@ -60,7 +60,7 @@ class RedactingFormatter(logging.Formatter):
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self):
+    def __init__(self, fields: List[str]):
         super(RedactingFormatter, self).__init__(self.FORMAT)
 
     def format(self, record: logging.LogRecord) -> str:
